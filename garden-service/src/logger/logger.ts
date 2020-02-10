@@ -17,6 +17,7 @@ import { FancyTerminalWriter } from "./writers/fancy-terminal-writer"
 import { JsonTerminalWriter } from "./writers/json-terminal-writer"
 import { parseLogLevel } from "../cli/helpers"
 import { FullscreenTerminalWriter } from "./writers/fullscreen-terminal-writer"
+import { EventBus } from "../events"
 
 export type LoggerType = "quiet" | "basic" | "fancy" | "fullscreen" | "json"
 export const LOGGER_TYPES = new Set<LoggerType>(["quiet", "basic", "fancy", "fullscreen", "json"])
@@ -44,6 +45,7 @@ export interface LoggerConfig {
 
 export class Logger extends LogNode {
   public writers: Writer[]
+  public events: EventBus
   public useEmoji: boolean
 
   private static instance: Logger
@@ -102,6 +104,7 @@ export class Logger extends LogNode {
     super(config.level)
     this.writers = config.writers || []
     this.useEmoji = config.useEmoji === false ? false : true
+    this.events = new EventBus()
   }
 
   protected createNode(params: CreateNodeParams): LogEntry {

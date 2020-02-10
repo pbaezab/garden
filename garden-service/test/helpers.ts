@@ -313,8 +313,8 @@ interface EventLogEntry {
 class TestEventBus extends EventBus {
   public eventLog: EventLogEntry[]
 
-  constructor(log: LogEntry) {
-    super(log)
+  constructor() {
+    super()
     this.eventLog = []
   }
 
@@ -335,7 +335,7 @@ export class TestGarden extends Garden {
 
   constructor(params: GardenParams) {
     super(params)
-    this.events = new TestEventBus(this.log)
+    this.events = new TestEventBus()
   }
 
   setModuleConfigs(moduleConfigs: ModuleConfig[]) {

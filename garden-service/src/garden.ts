@@ -215,7 +215,7 @@ export class Garden {
     this.resolvedProviders = {}
 
     this.taskGraph = new TaskGraph(this, this.log)
-    this.events = new EventBus(this.log)
+    this.events = new EventBus()
 
     // Register plugins
     for (const plugin of [...builtinPlugins, ...params.plugins]) {
@@ -329,6 +329,7 @@ export class Garden {
    * Clean up before shutting down.
    */
   async close() {
+    this.events.removeAllListeners()
     this.watcher && (await this.watcher.stop())
   }
 
