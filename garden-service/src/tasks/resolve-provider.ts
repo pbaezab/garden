@@ -112,7 +112,12 @@ export class ResolveProviderTask extends BaseTask {
       return alreadyResolvedProviders
     }
 
-    const context = new ProviderConfigContext(this.garden, resolvedProviders, this.garden.variables)
+    const context = new ProviderConfigContext({
+      garden: this.garden,
+      resolvedProviders,
+      variables: this.garden.variables,
+      secrets: this.garden.secrets,
+    })
 
     this.log.silly(`Resolving template strings for provider ${this.config.name}`)
     let resolvedConfig = await resolveTemplateStrings(this.config, context)

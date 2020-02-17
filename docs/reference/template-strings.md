@@ -206,6 +206,30 @@ Alias for the variables field.
 | -------- | ------- |
 | `object` | `{}`    |
 
+### `${var.<name>}`
+
+Number, string or boolean
+
+| Type                        |
+| --------------------------- |
+| `number | string | boolean` |
+
+### `${secrets.*}`
+
+A map of all secrets for this project in the current environment.
+
+| Type     |
+| -------- |
+| `object` |
+
+### `${secrets.<secret-name>}`
+
+The secret's value.
+
+| Type     |
+| -------- |
+| `string` |
+
 
 ## Module configuration context
 
@@ -342,6 +366,30 @@ Alias for the variables field.
 | Type     | Default |
 | -------- | ------- |
 | `object` | `{}`    |
+
+### `${var.<name>}`
+
+Number, string or boolean
+
+| Type                        |
+| --------------------------- |
+| `number | string | boolean` |
+
+### `${secrets.*}`
+
+A map of all secrets for this project in the current environment.
+
+| Type     |
+| -------- |
+| `object` |
+
+### `${secrets.<secret-name>}`
+
+The secret's value.
+
+| Type     |
+| -------- |
+| `string` |
 
 ### `${modules.*}`
 
@@ -511,6 +559,30 @@ Alias for the variables field.
 | Type     | Default |
 | -------- | ------- |
 | `object` | `{}`    |
+
+### `${var.<name>}`
+
+Number, string or boolean
+
+| Type                        |
+| --------------------------- |
+| `number | string | boolean` |
+
+### `${secrets.*}`
+
+A map of all secrets for this project in the current environment.
+
+| Type     |
+| -------- |
+| `object` |
+
+### `${secrets.<secret-name>}`
+
+The secret's value.
+
+| Type     |
+| -------- |
+| `string` |
 
 ### `${modules.*}`
 
