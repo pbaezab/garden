@@ -3,6 +3,7 @@ version: 2.1
 
 orbs:
   win: circleci/windows@1.0.0
+  rok8s-scripts: fairwinds/rok8s-scripts@11.1.3
 
 # Shared config to use between jobs
 # These can be used to inject shared variables
@@ -469,6 +470,50 @@ jobs:
           command: CIRCLE_BUILD_NUM=$CIRCLE_BUILD_NUM-dist kubectl delete --wait=false $(kubectl get ns -o name | grep testing-$CIRCLE_BUILD_NUM) || true
           when: always
 
+  test-kind:
+    machine:
+      image: 'ubuntu-1604:201903-01'
+      docker_layer_caching: true
+    parameters:
+      kindNodeImage:
+        description: The kind node image to use
+        type: string
+    environment:
+      <<: *shared-env-config
+      GARDEN_LOG_LEVEL: debug
+      GARDEN_LOGGER_TYPE: basic
+    steps:
+      - checkout
+      # using the rok8s-scripts orb here to set up kind
+      - rok8s-scripts/e2e_start_kind_cluster:
+          kind_node_image: <<parameters.kindNodeImage>>
+      - rok8s-scripts/e2e_start_command_runner
+      - rok8s-scripts/e2e_hostpath_provisioner
+      - update_nodejs
+      - install_kubectl
+      # Note: We can't use npm_install here because the cache conflicts
+      - run: npm ci
+      - run: npm run bootstrap
+      - run: npm run build
+      - run:
+          name: Integ tests
+          command: |
+            mkdir -p ~/.kube
+            cp ./kind-kubeconfig ~/.kube/config
+            cat ~/.kube/config    # TODO: REMOVE
+            kubectl config set-context kind-kind
+            cd garden-service
+            # Notes:
+            # - We skip tests that only work for remote environments
+            # - We currently don't support in-cluster building on kind.
+            npm run integ-kind -- -b
+      - run:
+          name: Deploy demo-project
+          command: ./garden-service/bin/garden deploy --root examples/demo-project --logger-type basic
+      - run:
+          name: Deploy openfaas
+          command: ./garden-service/bin/garden deploy --root examples/openfaas --logger-type basic
+
   test-microk8s:
     machine:
       image: 'ubuntu-1604:201903-01'
@@ -644,6 +689,10 @@ workflows:
     jobs:
       - test-minikube:
           kubernetesVersion: "1.12.10"
+  test-kind-1.16:
+    jobs:
+      - test-kind:
+          kindNodeImage: kindest/node:v1.16.5@sha256:b91a2c2317a000f3a783489dfb755064177dbc3a0b2f4147d50f04825d016f55
   commit:
     jobs:
       ### ALL BRANCHES ###
