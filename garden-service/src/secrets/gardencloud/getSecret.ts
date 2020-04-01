@@ -13,18 +13,22 @@ export async function getSecretsFromGardenCloud({
   log,
   projectConfig,
   platformUrl,
+  clientAuthToken,
   environmentName,
 }: GetSecretsParams) {
   try {
-    const res = await got(`${platformUrl}/${projectConfig.name}/env/${environmentName}`).json<GotResponse<any>>()
-
-    if (res && res.statusCode === 200 && res.body && res.body.status === "success") {
-      return res.body["data"]
+    const res = await got(`${platformUrl}/secrets/project/name/${projectConfig.name}/env/${environmentName}`,
+     {headers: {"x-access-auth-token": clientAuthToken}}).json<GotResponse<any>>()
+    if (res && res["status"] === "success") {
+      return res["data"]
     }
+    console.log(clientAuthToken)
+    console.log(res)
     return {}
   } catch (err) {
     log.error("An error occurred while fetching secrets for the project.")
     log.error(err)
+    console.log(err)
     return {}
   }
 }

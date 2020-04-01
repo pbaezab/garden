@@ -25,7 +25,7 @@ import { LogEntry } from "../logger/log-entry"
  */
 export async function login(platformUrl: string, log: LogEntry): Promise<string> {
   const savedToken = await readAuthToken(log)
-
+  
   // Ping platform with saved token (if it exists)
   if (savedToken) {
     log.debug("Local client auth token found, verifying it with platform...")
@@ -59,9 +59,14 @@ export async function login(platformUrl: string, log: LogEntry): Promise<string>
  * Checks with the backend whether the provided client auth token is valid.
  */
 async function checkClientAuthToken(token: string, platformUrl: string, log: LogEntry): Promise<boolean> {
-  const res = await axios.get(`${platformUrl}/token/verify?${qs.stringify({ token })}`)
-  log.debug(`Checked client auth token with platform - valid: ${res.data.data.valid}`)
-  return !!res.data.data.valid
+  try {
+    const res = await axios.get(`${platformUrl}/token/verify`, { headers: {"x-access-auth-token": token}})
+    log.debug(`Checked client auth token with platform - valid: ${res.data.data.valid}`)
+    return !!res.data.data.valid
+  }catch(err){
+    log.debug(`Check client auth with platform failed with ${err.message}`)
+  }
+  return false
 }
 
 /**
