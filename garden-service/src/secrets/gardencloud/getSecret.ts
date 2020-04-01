@@ -22,13 +22,9 @@ export async function getSecretsFromGardenCloud({
     if (res && res["status"] === "success") {
       return res["data"]
     }
-    console.log(clientAuthToken)
-    console.log(res)
     return {}
   } catch (err) {
     log.error("An error occurred while fetching secrets for the project.")
-    log.error(err)
-    console.log(err)
     return {}
   }
 }
